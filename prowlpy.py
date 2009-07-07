@@ -25,7 +25,7 @@ class Prowl(object):
         h.add_credentials(self.username,self.password)
         
         # Set User-Agent
-        headers = {'User-Agent': "ProwlScriptPy/%s" % str(__version__)}
+        headers = {'User-Agent': "Prowlpy/%s" % str(__version__)}
         
         # URL-encode and string-ify keywords. Better type/content testing is needed here
         application = urllib.quote(str(application))
