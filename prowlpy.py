@@ -20,20 +20,25 @@ class Prowl(object):
         self.password = password
     
     def post(self,application=None,event=None,description=None):
+        # Create the http object
         h = httplib2.Http(".cache")
         h.add_credentials(self.username,self.password)
+        
+        # Set User-Agent
         headers = {'User-Agent': "ProwlScriptPy/%s" % str(VERSION)}
         
+        # URL-encode and string-ify keywords. Better type/content testing is needed here
         application = urllib.quote(str(application))
         event = urllib.quote(str(event))
         desciption = urllib.quote(str(description))
         
+        # Perform the request and get the response headers and content (Content should be blank for now)
         resp,content = h.request("https://prowl.weks.net/api/add_notification.php?application=%s&event=%s&description=%s" \
                                     % (application, event, description))
-
+        
         if(resp['status']=='200'):
-            print "Success!"
+            return = True
         elif(resp['status']=='401'): 
-            print "Auth Failed"
+            raise Exception("Auth Failed")
         else:
-            print "Failed"
+            raise Exception("Failed")
