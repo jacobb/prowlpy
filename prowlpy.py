@@ -25,7 +25,7 @@ class Prowl(object):
         h.add_credentials(self.username,self.password)
         
         # Set User-Agent
-        headers = {'User-Agent': "ProwlScriptPy/%s" % str(VERSION)}
+        headers = {'User-Agent': "ProwlScriptPy/%s" % str(__version__)}
         
         # URL-encode and string-ify keywords. Better type/content testing is needed here
         application = urllib.quote(str(application))
@@ -37,7 +37,7 @@ class Prowl(object):
                                     % (application, event, description))
         
         if(resp['status']=='200'):
-            return = True
+            return True
         elif(resp['status']=='401'): 
             raise Exception("Auth Failed")
         else:
