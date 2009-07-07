@@ -1,1 +1,2 @@
-prowlpy.pyc
+*.pyc
+.cache/
