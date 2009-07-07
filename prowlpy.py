@@ -24,12 +24,11 @@ class Prowl(object):
         h.add_credentials(self.username,self.password)
         headers = {'User-Agent': "ProwlScriptPy/%s" % str(VERSION)}
         
-        data = {}
         application = urllib.quote(str(application))
         event = urllib.quote(str(event))
         desciption = urllib.quote(str(description))
         
-        resp,content = h.request("https://prowl.weks.net/api/add_notification.php?application=%s&event=%s&description=%s" / 
+        resp,content = h.request("https://prowl.weks.net/api/add_notification.php?application=%s&event=%s&description=%s" \
                                     % (application, event, description))
 
         if(resp['status']=='200'):
