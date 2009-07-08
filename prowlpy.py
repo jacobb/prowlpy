@@ -15,12 +15,12 @@ import urllib
 API_DOMAIN = 'https://prowl.weks.net/publicapi'
 
 class Prowl(object):
-    def __init__(self,apikey,username=None,password=None):
+    def __init__(self, apikey, username=None, password=None):
         self.apikey = apikey
         self.username = username #Currently not in use
         self.password = password #Currently not in use
         
-    def post(self,application=None,event=None,description=None):
+    def post(self, application=None, event=None, description=None):
         # Create the http object
         h = httplib2.Http(".cache")
         #h.add_credentials(self.username,self.password)
@@ -36,7 +36,7 @@ class Prowl(object):
         verify_resp,verify_content = h.request("%s/verify?apikey=%s" % \
                                                     (API_DOMAIN,self.apikey))
         
-        if verify_resp['status']!='200':
+        if verify_resp['status'] != '200':
             raise Exception("Invalid API Key %s" % verify_content)
         
         # Perform the request and get the response headers and content
@@ -45,9 +45,9 @@ class Prowl(object):
         url = "%s/add?application=%s&event=%s&description=%s&apikey=%s" \
                 % (API_DOMAIN,application, event, description,self.apikey)
         
-        if resp['status']=='200':
+        if resp['status'] == '200':
             return True
-        elif resp['status']=='401': 
+        elif resp['status'] == '401': 
             raise Exception("Auth Failed %s" % url)
         else:
             raise Exception("Failed")
