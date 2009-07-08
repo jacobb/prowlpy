@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Prowlpy V0.2
+Prowlpy V0.3
 
 Written by Jacob Burch, 7/6/2009
 
 Python module for posting to the iPhone Push Notification service Prowl: http://prowl.weks.net/
 """
 __author__ = 'jacobburch@gmail.com'
-__version__ = 0.2
+__version__ = 0.3
 
 import httplib2
 import urllib
