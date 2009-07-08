@@ -3,7 +3,8 @@ Example notification using prowl.
 """
 import prowlpy
 
-p = prowlpy.Prowl('dummy-username','dummy-password')
+apikey = '1234567890123456789012345678901234567890' #Dummy API-key)
+p = prowlpy.Prowl(apikey)
 try:
     p.post('TestApp','Server Down',"The Web Box isn't responding to a ping")
     print 'Success'

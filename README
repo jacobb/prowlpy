@@ -8,3 +8,9 @@ Dependencies:
 httplib2/urllib
 
 The socket module must be compiled with SSL support
+
+
+Todo:
+    Add priority
+    Add API key verification
+    Test against character-limits.

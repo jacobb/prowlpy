@@ -5,8 +5,6 @@ Prowlpy V0.2
 Written by Jacob Burch, 7/6/2009
 
 Python module for posting to the iPhone Push Notification service Prowl: http://prowl.weks.net/
-
-from prowlpy import Prowl
 """
 __author__ = 'jacobburch@gmail.com'
 __version__ = 0.2
