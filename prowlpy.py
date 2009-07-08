@@ -8,21 +8,25 @@ Python module for posting to the iPhone Push Notification service Prowl: http://
 
 from prowlpy import Prowl
 """
-
-import httplib2
-import urllib
 __author__ = 'jacobburch@gmail.com'
 __version__ = 0.2
 
+import httplib2
+import urllib
+
+
+
+API_DOMAIN = 'https://prowl.weks.net/publicapi/add'
 class Prowl(object):
-    def __init__(self,username,password):
-        self.username = username
-        self.password = password
-    
+    def __init__(self,apikey,username=None,password=None):
+        self.apikey = apikey
+        self.username = username #currently not in use
+        self.password = password #Currently not in use
+        
     def post(self,application=None,event=None,description=None):
         # Create the http object
         h = httplib2.Http(".cache")
-        h.add_credentials(self.username,self.password)
+        #h.add_credentials(self.username,self.password)
         
         # Set User-Agent
         headers = {'User-Agent': "Prowlpy/%s" % str(__version__)}
@@ -33,8 +37,8 @@ class Prowl(object):
         desciption = urllib.quote(str(description))
         
         # Perform the request and get the response headers and content (Content should be blank for now)
-        resp,content = h.request("https://prowl.weks.net/api/add_notification.php?application=%s&event=%s&description=%s" \
-                                    % (application, event, description))
+        resp,content = h.request("%s?application=%s&event=%s&description=%s&apikey=%s" \
+                                    % (API_DOMAIN,application, event, description,self.apikey))
         
         if(resp['status']=='200'):
             return True
