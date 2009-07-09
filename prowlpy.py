@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Prowlpy V0.4
+Prowlpy V0.4.1
 
 Written by Jacob Burch, 7/6/2009
 
 Python module for posting to the iPhone Push Notification service Prowl: http://prowl.weks.net/
 """
 __author__ = 'jacobburch@gmail.com'
-__version__ = 0.4
+__version__ = 0.41
 
 import httplib2
 import urllib
 
-httplib2.debuglevel = 4
 API_DOMAIN = 'https://prowl.weks.net/publicapi'
 
 class Prowl(object):
@@ -21,7 +20,7 @@ class Prowl(object):
         self.username = username #Currently not in use
         self.password = password #Currently not in use
         
-    def post(self, application=None, event=None, description=None):
+    def post(self, application=None, event=None, description=None,priority=0):
         
         # Create the http object
         h = httplib2.Http(".cache")
@@ -33,14 +32,16 @@ class Prowl(object):
         application = urllib.quote(str(application))
         event = urllib.quote(str(event))
         description = urllib.quote(str(description))
-        
+        priority = urllib.quote(str(priority))
         
         # Perform the request and get the response headers and content
         data = {
+            'apikey': self.apikey,
             'application': application,
             'event': event,
             'description': description,
-            'apikey': self.apikey
+            'priority': priority
+
         }
         headers["Content-type"] = "application/x-www-form-urlencoded"
         
@@ -52,12 +53,12 @@ class Prowl(object):
         else:
             raise Exception("Failed")
         
-    def add(self, application=None, event=None, description=None):
+    def add(self, application=None, event=None, description=None,priority=0):
         """
         Alias for the post function
         Will become the default namespace for adding events by version 1.0
         """
-        return self.post(application=application,event=event,description=description)
+        return self.post(application=application,event=event,description=description,priority=priority)
     
     def verify_key(self):
         h = httplib2.Http(".cache")
