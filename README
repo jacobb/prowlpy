@@ -7,9 +7,14 @@ Dependencies:
 httplib2/urllib
 
 The socket module must be compiled with SSL support
+------
+Change Log
+------
+
 V0.41
 Adding priority setting
 Removed debug code
+
 V0.4
 Added Prowl.add alias for Post
 Switched post to use (oddly enough) POST instead of GET

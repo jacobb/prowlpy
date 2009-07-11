@@ -15,15 +15,18 @@ import urllib
 API_DOMAIN = 'https://prowl.weks.net/publicapi'
 
 class Prowl(object):
-    def __init__(self, apikey, username=None, password=None):
+    def __init__(self, apikey):
+        """
+        Initialize a Prowl instance.
+        """
         self.apikey = apikey
-        self.username = username #Currently not in use
-        self.password = password #Currently not in use
+        
+        # Aliasing
+        self.add = self.post
         
     def post(self, application=None, event=None, description=None,priority=0):
-        
         # Create the http object
-        h = httplib2.Http(".cache")
+        h = httplib2.Http()
         
         # Set User-Agent
         headers = {'User-Agent': "Prowlpy/%s" % str(__version__)}
@@ -44,8 +47,8 @@ class Prowl(object):
 
         }
         headers["Content-type"] = "application/x-www-form-urlencoded"
-        
         resp,content = h.request("%s/add/" % API_DOMAIN, "POST", headers=headers, body=urllib.urlencode(data))
+        
         if resp['status'] == '200':
             return True
         elif resp['status'] == '401': 
@@ -53,15 +56,9 @@ class Prowl(object):
         else:
             raise Exception("Failed")
         
-    def add(self, application=None, event=None, description=None,priority=0):
-        """
-        Alias for the post function
-        Will become the default namespace for adding events by version 1.0
-        """
-        return self.post(application=application,event=event,description=description,priority=priority)
     
     def verify_key(self):
-        h = httplib2.Http(".cache")
+        h = httplib2.Http()
         headers = {'User-Agent': "Prowlpy/%s" % str(__version__)}
         verify_resp,verify_content = h.request("%s/verify?apikey=%s" % \
                                                     (API_DOMAIN,self.apikey))
