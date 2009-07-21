@@ -11,6 +11,10 @@ The socket module must be compiled with SSL support
 Change Log
 ------
 
+V0.42
+Got rid of Now-uncessary URL Encoding.
+Working on incorporating forked changes while not totally breaking backward compatibility with the vanilla add function
+
 V0.41
 Adding priority setting
 Removed debug code
