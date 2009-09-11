@@ -1,16 +1,17 @@
+#/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Prowlpy V0.4.1
+Prowlpy V0.4.2
 
 Written by Jacob Burch, 7/6/2009
 
 Python module for posting to the iPhone Push Notification service Prowl: http://prowl.weks.net/
 """
 __author__ = 'jacobburch@gmail.com'
-__version__ = 0.41
+__version__ = 0.42
 
-import httplib2
-import urllib
+from httplib2 import Http
+from urllib import urlencode
 
 API_DOMAIN = 'https://prowl.weks.net/publicapi'
 
@@ -26,7 +27,7 @@ class Prowl(object):
         
     def post(self, application=None, event=None, description=None,priority=0):
         # Create the http object
-        h = httplib2.Http()
+        h = Http()
         
         # Set User-Agent
         headers = {'User-Agent': "Prowlpy/%s" % str(__version__)}
@@ -41,7 +42,7 @@ class Prowl(object):
 
         }
         headers["Content-type"] = "application/x-www-form-urlencoded"
-        resp,content = h.request("%s/add/" % API_DOMAIN, "POST", headers=headers, body=urllib.urlencode(data))
+        resp,content = h.request("%s/add/" % API_DOMAIN, "POST", headers=headers, body=urlencode(data))
         
         if resp['status'] == '200':
             return True
@@ -52,7 +53,7 @@ class Prowl(object):
         
     
     def verify_key(self):
-        h = httplib2.Http()
+        h = Http()
         headers = {'User-Agent': "Prowlpy/%s" % str(__version__)}
         verify_resp,verify_content = h.request("%s/verify?apikey=%s" % \
                                                     (API_DOMAIN,self.apikey))

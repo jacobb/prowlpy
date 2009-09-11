@@ -30,8 +30,6 @@ Changed to handle the new API system.
 V0.2
 Basic working module
 
-
 Todo:
-    Add priority
     Test against character-limits.
 	More detailed Exceptions based on the returned XML document
