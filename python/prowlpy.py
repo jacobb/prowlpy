@@ -59,7 +59,8 @@ class Prowl(object):
         h = Http()
         headers = {'User-Agent': "Prowlpy/%s" % str(__version__)}
         verify_resp,verify_content = h.request("%s/verify?apikey=%s" % \
-                                                    (API_DOMAIN,self.apikey))
+                                               (API_DOMAIN,self.apikey),
+                                               headers=headers)
         if verify_resp['status'] != '200':
             raise Exception("Invalid API Key %s" % verify_content)
         else:
