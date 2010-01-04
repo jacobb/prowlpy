@@ -16,12 +16,12 @@ from urllib import urlencode
 API_DOMAIN = 'https://prowl.weks.net/publicapi'
 
 class Prowl(object):
-    def __init__(self, apikey):
+    def __init__(self, apikey, providerkey = None):
         """
         Initialize a Prowl instance.
         """
         self.apikey = apikey
-        
+        self.providerkey = providerkey
         # Aliasing
         self.add = self.post
         
@@ -41,6 +41,9 @@ class Prowl(object):
             'priority': priority
 
         }
+        if self.providerkey:
+            data['providerkey'] = self.providerkey
+
         headers["Content-type"] = "application/x-www-form-urlencoded"
         resp,content = h.request("%s/add/" % API_DOMAIN, "POST", headers=headers, body=urlencode(data))
         
