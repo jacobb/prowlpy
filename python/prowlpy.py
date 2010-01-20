@@ -114,10 +114,9 @@ class Prowl(object):
                     headers = self.headers,
                     body = urlencode(data))
         request_status = h.getresponse().status
-        
-        if request_status == '200':
+        if request_status == 200:
             return True
-        elif request_status == '401': 
+        elif request_status == 401: 
             raise Exception("Auth Failed: %s" % content)
         else:
             raise Exception("Failed")
@@ -144,7 +143,7 @@ class Prowl(object):
 
         request_status = h.getresponse().status
 
-        if request_status != '200':
+        if request_status != 200:
             raise Exception("Invalid API Key %s" % self.apikey)
         else:
             return True
