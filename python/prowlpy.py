@@ -57,7 +57,7 @@ from urllib import urlencode
 API_DOMAIN = 'prowl.weks.net'
 
 class Prowl(object):
-    def __init__(self, apikey):
+    def __init__(self, apikey, providerkey = None):
         """
         Initialize a Prowl instance.
         """
@@ -66,7 +66,7 @@ class Prowl(object):
         # Set User-Agent
         self.headers = {'User-Agent': "Prowlpy/%s" % str(__version__),
                         'Content-type': "application/x-www-form-urlencoded"}
- 
+
         # Aliasing
         self.add = self.post
         
@@ -93,7 +93,6 @@ class Prowl(object):
         - description : a description of the event, generally terse.
         """
 
-
         # Create the http object
         h = Https(API_DOMAIN)
         
@@ -104,8 +103,8 @@ class Prowl(object):
             'event': event,
             'description': description,
             'priority': priority
-
         }
+
         if providerkey is not None:
             data['providerkey'] = providerkey
 
@@ -113,15 +112,16 @@ class Prowl(object):
                     "/publicapi/add",
                     headers = self.headers,
                     body = urlencode(data))
-        request_status = h.getresponse().status
+        response = h.getresponse()
+        request_status = response.status
+
         if request_status == 200:
             return True
         elif request_status == 401: 
-            raise Exception("Auth Failed: %s" % content)
+            raise Exception("Auth Failed: %s" % response.reason)
         else:
             raise Exception("Failed")
         
-    
     def verify_key(self, providerkey = None):
         """
         Verify if the API key is valid.
@@ -145,5 +145,3 @@ class Prowl(object):
 
         if request_status != 200:
             raise Exception("Invalid API Key %s" % self.apikey)
-        else:
-            return True
