@@ -35,20 +35,18 @@ Example notification using prowl API v1.2
 """
 import prowlpy
 
-apikey = 'b57501d2e56cfd64316153da47355283db4752fc' # API key
-pkey   = '2b39d3f3f8522aaed4b2fc44357f1519793db6a2' # provider key
+# get a apikey and provider key at https://www.prowlapp.com/api_settings.php
+apikey = 'sdfsdfsdfsdffdfsdf' # insert your API key
+pkey   = 'sfsdfasdfadsfsdfsf' # insert your provider key
 
 p = prowlpy.Prowl(apikey)
 
 # get token for user
-token = p.retrieve_token(pkey)
+response = p.retrieve_token(pkey)
+
+print "I got token %s for %s" % (response['token'], response['url'])
 
 # assuming that the user has accepted your request
+# (they go to the response["url"] via a browser to accept)
 # retrieve his/her apikey
-users_apikey = p.retrieve_apikey(pkey, token)
-
-try:
-    p.add('TestApp','Registration',"You are registered !", 1, None, "http://www.prowlapp.com/")
-    print 'Success'
-except Exception,msg:
-    print msg
+users_apikey = p.retrieve_apikey(pkey, response["token"])

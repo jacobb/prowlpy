@@ -55,7 +55,7 @@ __author__ = 'Jacob Burch'
 __author_email__ = 'jacoburch@gmail.com'
 __maintainer__ = 'Olivier Hervieu'
 __maintainer_email__ = 'olivier.hervieu@gmail.com'
-__version__ = 0.50
+__version__ = 0.51
 
 from httplib import HTTPSConnection as Https
 from urllib import urlencode
@@ -192,6 +192,13 @@ class Prowl(object):
 
         The parameters are :
         - providerkey (required) : your provider API key.
+
+        This returns a dictionary such as:
+        {'code': u'0',
+         'remaining': u'999',
+         'resetdate': u'1299535575',
+         'token': u'60fd568423e3cd337b45172be91cabe46b94c200',
+         'url': u'https://www.prowlapp.com/retrieve.php?token=60fd5684'}
         """
 
         h = Https(API_DOMAIN)
@@ -210,10 +217,23 @@ class Prowl(object):
 
         if request_status == 200:
             dom = minidom.parseString(request.read())
+            code = dom.getElementsByTagName('prowl')[0].\
+                            getElementsByTagName('success')[0].\
+                            getAttribute('code')
+            remaining = dom.getElementsByTagName('prowl')[0].\
+                            getElementsByTagName('success')[0].\
+                            getAttribute('remaining')
+            resetdate = dom.getElementsByTagName('prowl')[0].\
+                            getElementsByTagName('success')[0].\
+                            getAttribute('resetdate')
             token = dom.getElementsByTagName('prowl')[0].\
                         getElementsByTagName('retrieve')[0].\
                         getAttribute('token')
-            return token
+            url = dom.getElementsByTagName('prowl')[0].\
+                      getElementsByTagName('retrieve')[0].\
+                      getAttribute('url')
+            return dict(token=token, url=url, code=code,
+                        remaining=remaining, resetdate=resetdate)
         else:
             self._relay_error(request_status)
 
@@ -225,7 +245,13 @@ class Prowl(object):
 
         The parameters are :
         - providerkey (required) : your provider API key.
-        - token (required): the token returned from retrieve/token.
+        - token (required): the token returned from retrieve_token.
+
+        This returns a dictionary such as:
+        {'apikey': u'16b776682332cf11102b67d6db215821f2c233a3',
+         'code': u'200',
+         'remaining': u'999',
+         'resetdate': u'1299535575'}
         """
 
         h = Https(API_DOMAIN)
@@ -247,7 +273,24 @@ class Prowl(object):
                   "/publicapi/retrieve/apikey?" + urlencode(data),
                   headers=self.headers)
 
-        request_status = h.getresponse().status
+        request = h.getresponse()
+        request_status = request.status
 
-        if request_status != 200:
+        if request_status == 200:
+            dom = minidom.parseString(request.read())
+            code = dom.getElementsByTagName('prowl')[0].\
+                            getElementsByTagName('success')[0].\
+                            getAttribute('code')
+            remaining = dom.getElementsByTagName('prowl')[0].\
+                            getElementsByTagName('success')[0].\
+                            getAttribute('remaining')
+            resetdate = dom.getElementsByTagName('prowl')[0].\
+                            getElementsByTagName('success')[0].\
+                            getAttribute('resetdate')
+            users_api_key = dom.getElementsByTagName('prowl')[0].\
+                                getElementsByTagName('retrieve')[0].\
+                                getAttribute('apikey')
+            return dict(apikey=users_api_key, code=code, remaining=remaining,
+                        resetdate=resetdate)
+        else:
             self._relay_error(request_status)
