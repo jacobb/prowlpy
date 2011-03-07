@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
- 
+
 # Copyright (c) 2009, Jaccob Burch
 # Copyright (c) 2010, Olivier Hervieu
 #
@@ -36,18 +36,19 @@ import sys
 
 sys.path.append('python')
 
-from prowlpy import __author__ 
+from prowlpy import __author__
 from prowlpy import __version__
 
 long_description = '''
-Python module for posting to the iPhone Push Notification service Prowl: http://prowl.weks.net/
+Python module for posting to the iPhone Push Notification service Prowl:
+http://prowlapp.com/
 '''
 
 setup(
-        name = 'prowlpy',
-        packages = ['prowlpy'],
-        package_dir= {'prowlpy': 'python'},
-        version = __version__,
-        description= 'Python module for Prowl iPhone notification service',
-        author = __author__,
-)        
+        name='prowlpy',
+        packages=['prowlpy'],
+        package_dir={'prowlpy': 'python'},
+        version=__version__,
+        description='Python module for Prowl iPhone notification service',
+        author=__author__,
+)

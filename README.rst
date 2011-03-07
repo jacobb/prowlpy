@@ -20,7 +20,7 @@ Change Log:
 v0.50
 -----
 
-- updated for prowl API v1.2 
+- updated for prowl API v1.2
 - added retrieve_apikey and retrieve_token
 - add new example script
 - added url support for post

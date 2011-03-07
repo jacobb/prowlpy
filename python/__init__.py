@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
- 
+
 # Copyright (c) 2009, Jaccob Burch
 # Copyright (c) 2010, Olivier Hervieu
 #
