@@ -3,6 +3,7 @@
  
 # Copyright (c) 2009, Jaccob Burch
 # Copyright (c) 2010, Olivier Hervieu
+# Copyright (c) 2011, Ken Pepple
 #
 # All rights reserved.
 #
@@ -32,29 +33,35 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 """
-Prowlpy V0.42 originally written by Jacob Burch, modified by Olivier Hervieu.
- 
+Prowlpy V0.50 originally written by Jacob Burch, modified by Olivier Hervieu. 
+Updated to Prowl API version 1.2 by Ken Pepple.
+
 Python Prowlpy is a python module that implement the public api of Prowl to
 send push notification to iPhones.
  
 See http://prowl.weks.net for information about Prowl.
  
 The prowlpy module respect the API of prowl. So prowlpy provides a Prowl class
-which implements two methods :
+which implements four methods :
 - post, to push a notification to an iPhone,
 - verify_key, to verify an API key.
+- retrieve_token, to get a registration token for use in retrieve/apikey and the associated URL for the user to approve the request.
+- retrieve_apikey, to get an API key from a registration token retrieved in retrieve/token.
 """
 
 __author__ = 'Jacob Burch'
 __author_email__ = 'jacoburch@gmail.com'
 __maintainer__ = 'Olivier Hervieu'
 __maintainer_email__ = 'olivier.hervieu@gmail.com'
-__version__ = 0.42
+__maintainer__ = 'Ken Pepple'
+__maintainer_email__ = 'ken.pepple@gmail.com'
+__version__ = 0.50
 
 from httplib import HTTPSConnection as Https
 from urllib import urlencode
+from xml.dom import minidom
 
-API_DOMAIN = 'prowl.weks.net'
+API_DOMAIN = 'api.prowlapp.com'
 
 class Prowl(object):
     def __init__(self, apikey, providerkey = None):
@@ -70,8 +77,30 @@ class Prowl(object):
         # Aliasing
         self.add = self.post
         
-    def post(   self, application=None, event=None, 
-                description=None,priority=0, providerkey = None):
+    def _relay_error(self, error_code, reason=""):
+        """
+        Errors from http://www.prowlapp.com/api.php:
+        400 Bad request, the parameters you provided did not validate, see ERRORMESSAGE.
+        401 Not authorized, the API key given is not valid, and does not correspond to a user.
+        406 Not acceptable, your IP address has exceeded the API limit.
+        409 Not approved, the user has yet to approve your retrieve request.
+        500 Internal server error, something failed to execute properly on the Prowl side.
+        """
+        
+        if error_code == 400:
+            raise Exception("Bad Request. The parameters you provided did not validate.")
+        elif error_code == 401:
+            raise Exception("%s Probably invalid API key %s" % (reason, self.apikey))
+        elif error_code == 406:
+            raise Exception("Not acceptable, your IP address has exceeded the API limit")
+        elif error_code == 409:
+            raise Exception("Not approved, the user has yet to approve your retrieve request.")
+        elif error_code == 500:
+            raise Exception("Internal server error")
+
+    def post(   self, application=None, event=None,
+                description=None, priority=0, providerkey=None,
+                url=None):
         """
         Post a notification..
          
@@ -91,6 +120,7 @@ class Prowl(object):
                             quiet hours according to the user's settings)
         - event : the name of the event or subject of the notification.
         - description : a description of the event, generally terse.
+        - url (optional) : The URL which should be attached to the notification. 
         """
 
         # Create the http object
@@ -108,6 +138,9 @@ class Prowl(object):
         if providerkey is not None:
             data['providerkey'] = providerkey
 
+        if url is not None:
+            data['url'] = url[0:512] # API limits to 512 characters
+
         h.request(  "POST",
                     "/publicapi/add",
                     headers = self.headers,
@@ -117,10 +150,8 @@ class Prowl(object):
 
         if request_status == 200:
             return True
-        elif request_status == 401: 
-            raise Exception("Auth Failed: %s" % response.reason)
         else:
-            raise Exception("Failed")
+            self._relay_error(request_status, response.reason)
         
     def verify_key(self, providerkey = None):
         """
@@ -144,4 +175,70 @@ class Prowl(object):
         request_status = h.getresponse().status
 
         if request_status != 200:
-            raise Exception("Invalid API Key %s" % self.apikey)
+            self._relay_error(request_status)
+    
+    def retrieve_token(self, providerkey=None):
+        """
+        Get a registration token for use in retrieve/apikey 
+        and the associated URL for the user to approve the request.
+         
+        The parameters are :
+        - providerkey (required) : your provider API key.
+        """
+        
+        h = Https(API_DOMAIN)
+
+        data = {'apikey' : self.apikey}
+
+        if providerkey is not None:
+            data['providerkey'] = providerkey
+
+        h.request( "GET",
+                    "/publicapi/retrieve/token?"+ urlencode(data),
+                    headers=self.headers)
+
+        request = h.getresponse()
+        request_status = request.status
+        
+        if request_status == 200:
+            dom = minidom.parseString(request.read())
+            token = dom.getElementsByTagName('prowl')[0].\
+                        getElementsByTagName('retrieve')[0].\
+                        getAttribute('token')
+            return token
+        else:
+            self._relay_error(request_status)
+    
+    def retrieve_apikey(self, providerkey=None, token=None):
+        """
+        Get an API key from a registration token retrieved in retrieve/token.
+        The user must have approved your request first, or you will get an error response.
+        
+        The parameters are :
+        - providerkey (required) : your provider API key.
+        - token (required):	The token returned from retrieve/token.
+        """
+
+        h = Https(API_DOMAIN)
+
+        data = {'apikey' : self.apikey}
+
+        if providerkey is not None:
+            data['providerkey'] = providerkey
+        else:
+            raise Exception("Provider Key is required for retrieving API key")
+            
+        if token is not None:
+            data['token'] = token            
+        else:
+            raise Exception("Token is required for retrieving API key.\
+                             Call retrieve_token to request it.")
+
+        h.request( "GET",
+                    "/publicapi/retrieve/apikey?"+ urlencode(data),
+                    headers=self.headers)
+
+        request_status = h.getresponse().status
+
+        if request_status != 200:
+            self._relay_error(request_status)

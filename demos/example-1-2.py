@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2009, Jaccob Burch
-# Copyright (c) 2010, Olivier Hervieu
+# Copyright (c) 2011, Ken Pepple
 #
 # All rights reserved.
 #
@@ -32,14 +31,24 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
-Example notification using prowl.
+Example notification using prowl API v1.2
 """
 import prowlpy
 
-apikey = '1234567890123456789012345678901234567890' #Dummy API-key)
+apikey = 'b57501d2e56cfd64316153da47355283db4752fc' # API key
+pkey   = '2b39d3f3f8522aaed4b2fc44357f1519793db6a2' # provider key
+
 p = prowlpy.Prowl(apikey)
+
+# get token for user
+token = p.retrieve_token(pkey)
+
+# assuming that the user has accepted your request
+# retrieve his/her apikey
+users_apikey = p.retrieve_apikey(pkey, token)
+
 try:
-    p.add('TestApp','Server Down',"The Web Box isn't responding to a ping", 1, None, "http://www.prowlapp.com/")
+    p.add('TestApp','Registration',"You are registered !", 1, None, "http://www.prowlapp.com/")
     print 'Success'
 except Exception,msg:
     print msg
