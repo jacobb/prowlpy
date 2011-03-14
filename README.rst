@@ -2,8 +2,8 @@
 Prowlpy
 =======
 
-| Originally Written by Jacob Burch, 7/6/2009
-| Modified by Olivier Hervieu
+| Originally Written by Jacob Burch <jacoburch@gmail.com>, 7/6/2009
+| Modified by Olivier Hervieu <olivier.hervieu@gmail.com>
 | Updated for Prowl API 1.2 by Ken Pepple, 3/5/2011
 
 Python module for posting to the iPhone Push Notification service Prowl: http://www.prowlapp.com/
