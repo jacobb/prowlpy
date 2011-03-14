@@ -10,13 +10,22 @@ Python module for posting to the iPhone Push Notification service Prowl: http://
 
 Dependencies:
 =============
-
-No extra dependency (Prowlpy use only basic python modules).
-
 The socket module must be compiled with SSL support.
+
+
+Coming Backwards Incompatible Changes for 0.6
+=====================================
+- Anything referencing '*apikey' will be renamed to api_key
+- the package is now in a prowlpy directory, not python. the python directory will be removed
 
 Change Log:
 ===========
+v0.52
+-----
+- changed demo variables names
+- changed to VERSION from __version__
+- removed __author__ et al. variables from the packages
+- cleaned up the installation setup
 
 v0.51
 -----
