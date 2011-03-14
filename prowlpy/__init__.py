@@ -31,26 +31,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from setuptools import setup
-import sys, os
+from prowlpy import VERSION
+# This version will get tossed in 0.6
+__version__ = 0.52
 
-packages, data_files = [], []
-root_dir = os.path.dirname(__file__)
-if root_dir != '':
-    os.chdir(root_dir)
-
-version = __import__('prowlpy').VERSION
-
-long_description = '''
-Python module for posting to the iPhone Push Notification service Prowl:
-http://prowlapp.com/
-'''
-
-setup(
-        name='prowlpy',
-        packages=['prowlpy'],
-        package_dir={'prowlpy': 'prowlpy'},
-        version=version,
-        description='Python module for Prowl iPhone notification service',
-        author='Jacob Burch and Olivier Hervieu',
-)
+from prowlpy import Prowl
