@@ -53,16 +53,26 @@ which implements four methods :
 from httplib import HTTPSConnection as Https
 from urllib import urlencode
 from xml.dom import minidom
-
+from exceptions import DeprecationWarning
 API_DOMAIN = 'api.prowlapp.com'
 VERSION = '0.52'
 
 class Prowl(object):
-    def __init__(self, apikey, providerkey=None):
+    def __init__(self, api_key, provider_key=None, **kwargs):
         """
         Initialize a Prowl instance.
         """
-        self.apikey = apikey
+
+        if 'apikey' in kwargs:
+            import warnings
+            warnings.warn('`apikey` has been deprecated in favor of `api_key` and will be removed in 0.7')
+            api_key = kwargs['apikey']
+        if 'providerkey' in kwargs:
+            import warnings
+            warnings.warn('`providerkey` has been deprecated in favor of `provider_key` and will be removed in 0.7')
+            provider_key = kwargs['providerkey']
+
+        self.api_key = api_key
         # Set User-Agent
         self.headers = {'User-Agent': "Prowlpy/%s" % VERSION,
                         'Content-type': "application/x-www-form-urlencoded"}
@@ -88,7 +98,7 @@ class Prowl(object):
                 "Bad Request. The parameters you provided did not validate")
         elif error_code == 401:
             raise Exception(
-                "%s Probably invalid API key %s" % (reason, self.apikey))
+                "%s Probably invalid API key %s" % (reason, self.api_key))
         elif error_code == 406:
             raise Exception(
                 "Not acceptable, your IP address has exceeded the API limit")
@@ -100,8 +110,8 @@ class Prowl(object):
                 "Internal server error")
 
     def post(self, application=None, event=None,
-             description=None, priority=0, providerkey=None,
-             url=None):
+             description=None, priority=0, provider_key=None,
+             url=None, **kwargs):
         """
         Post a notification..
 
@@ -109,7 +119,7 @@ class Prowl(object):
         The parameters are :
         - application ; The name of your application or the application
           generating the event.
-        - providerkey (optional) : your provider API key.
+        - provider_key (optional) : your provider API key.
           Only necessary if you have been whitelisted.
         - priority (optional) : default value of 0 if not provided.
           An integer value ranging [-2, 2] representing:
@@ -129,14 +139,20 @@ class Prowl(object):
         h = Https(API_DOMAIN)
 
         # Perform the request and get the response headers and content
-        data = {'apikey': self.apikey,
+        data = {'api_key': self.api_key,
                 'application': application,
                 'event': event,
                 'description': description,
                 'priority': priority}
+        if 'providerkey' in kwargs:
+            import warnings
+            warnings.warn(
+                "providerkey has been deprecated in favor of `provider_key` and will be removed in 0.7",
+                DeprecationWarning
+            )
 
-        if providerkey is not None:
-            data['providerkey'] = providerkey
+        if provider_key is not None:
+            data['provider_key'] = provider_key
 
         if url is not None:
             data['url'] = url[0:512]  # API limits to 512 characters
@@ -163,7 +179,7 @@ class Prowl(object):
         """
         h = Https(API_DOMAIN)
 
-        data = {'apikey': self.apikey}
+        data = {'api_key': self.api_key}
 
         if providerkey is not None:
             data['providerkey'] = providerkey
@@ -179,7 +195,7 @@ class Prowl(object):
 
     def retrieve_token(self, providerkey=None):
         """
-        Get a registration token for use in retrieve/apikey
+        Get a registration token for use in retrieve_api_key
         and the associated URL for the user to approve the request.
 
         The parameters are :
@@ -195,7 +211,7 @@ class Prowl(object):
 
         h = Https(API_DOMAIN)
 
-        data = {'apikey': self.apikey}
+        data = {'api_key': self.api_key}
 
         if providerkey is not None:
             data['providerkey'] = providerkey
@@ -229,7 +245,7 @@ class Prowl(object):
         else:
             self._relay_error(request_status)
 
-    def retrieve_apikey(self, providerkey=None, token=None):
+    def retrieve_api_key(self, providerkey=None, token=None):
         """
         Get an API key from a registration token retrieved in retrieve/token.
         The user must have approved your request first, or you will get an
@@ -240,7 +256,7 @@ class Prowl(object):
         - token (required): the token returned from retrieve_token.
 
         This returns a dictionary such as:
-        {'apikey': u'16b776682332cf11102b67d6db215821f2c233a3',
+        {'api_key': u'16b776682332cf11102b67d6db215821f2c233a3',
          'code': u'200',
          'remaining': u'999',
          'resetdate': u'1299535575'}
@@ -248,7 +264,7 @@ class Prowl(object):
 
         h = Https(API_DOMAIN)
 
-        data = {'apikey': self.apikey}
+        data = {'api_key': self.api_key}
 
         if providerkey is not None:
             data['providerkey'] = providerkey
@@ -282,7 +298,12 @@ class Prowl(object):
             users_api_key = dom.getElementsByTagName('prowl')[0].\
                                 getElementsByTagName('retrieve')[0].\
                                 getAttribute('apikey')
-            return dict(apikey=users_api_key, code=code, remaining=remaining,
+            return dict(api_key=users_api_key, code=code, remaining=remaining,
                         resetdate=resetdate)
         else:
             self._relay_error(request_status)
+    def retrieve_apikey(*args, **kwargs):
+        import warnings
+        warnings.warn("`retrieve_apikey` has been deprecated in favor of `retrieve_api_key` and will be \
+                        deprecated in 0.7")
+        retrieve_api_key(*args, **kwargs)
